@@ -2,9 +2,11 @@
 
 ## Installation
 
-https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI%20Image%20EXIF%20Viewer.js
+[설치 링크](https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js)
 
-설치 ㄱㄱ
+위쪽 링크 클릭해서 설치 ㄱㄱ
+
+만약 자동으로 설치가 안된다면 GreaseMonkey 계열 유저스크립트 확장을 설치해야함.
 
 # AI-Image-EXIF-Viewer (OLD)
 https://github.com/nyqui/AI-Image-EXIF-Viewer
