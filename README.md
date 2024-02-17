@@ -8,6 +8,10 @@
 
 만약 자동으로 설치가 안된다면 GreaseMonkey 계열 유저스크립트 확장을 설치해야함.
 
+## 주요 변경점
+
+- NovelAI Stealth PNGCOMP 지원.
+
 # AI-Image-EXIF-Viewer (OLD)
 https://github.com/nyqui/AI-Image-EXIF-Viewer
 
