@@ -1,4 +1,12 @@
 # AI-Image-EXIF-Viewer
+
+## Installation
+
+https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI%20Image%20EXIF%20Viewer.js
+
+설치 ㄱㄱ
+
+# AI-Image-EXIF-Viewer (OLD)
 https://github.com/nyqui/AI-Image-EXIF-Viewer
 
 https://greasyfork.org/ko/scripts/464214
