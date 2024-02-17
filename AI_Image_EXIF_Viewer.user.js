@@ -10,7 +10,7 @@
 // @version     2.1.1+1.0
 // @author      PantaFive
 // @homepageURL https://github.com/panta5/AI-Image-EXIF-Viewer
-// @downloadURL https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI%20Image%20EXIF%20Viewer.js
+// @downloadURL https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js
 // @require     https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js
 // @require     https://greasyfork.org/scripts/452821-upng-js/code/UPNGjs.js?version=1103227
 // @require     https://cdn.jsdelivr.net/npm/casestry-exif-library@2.0.3/dist/exif-library.min.js
