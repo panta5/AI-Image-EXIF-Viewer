@@ -2,6 +2,10 @@
 
 ## Installation
 
+https://greasyfork.org/ko/scripts/487588
+
+or
+
 [설치 링크](https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js)
 
 위쪽 링크 클릭해서 설치 ㄱㄱ
