@@ -2,10 +2,6 @@
 
 ## Installation
 
-https://greasyfork.org/ko/scripts/487588
-
-or
-
 [설치 링크](https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js)
 
 위쪽 링크 클릭해서 설치 ㄱㄱ
@@ -13,6 +9,21 @@ or
 만약 자동으로 설치가 안된다면 GreaseMonkey 계열 유저스크립트 확장을 설치해야함.
 
 ## 주요 변경점
+
+### v1.1
+
+버그 있으면 이슈 올려주는게 수정이 빠릅니다...
+
+다른거 개발하다가 문제있다고 한 글들 겨우 찾음
+
+문제가 생기면 댓글이나 깃허브 이슈 꼭 올려주세요.
+
+- NAI V4 지원 [https://arca.live/b/aiart/121872652](https://arca.live/b/aiart/124370349)
+- 글쓰기 창 스크립트 토글 삭제 [https://arca.live/b/aiart/121872652](https://arca.live/b/aiart/121872652)
+- Violentmonkey 2.30.0 정상작동 확인
+- 확장프로그램 페이지에서 개발자모드 켜줘야 작동한다는 의견도 있었는데 난 잘됨.
+
+### v1.0
 
 - NovelAI Stealth PNGCOMP 지원.
 
