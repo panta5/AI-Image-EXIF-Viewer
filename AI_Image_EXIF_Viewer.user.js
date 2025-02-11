@@ -7,7 +7,7 @@
 // @match       https://arca.live/b/aiartreal*
 // @match       https://arca.live/b/aireal*
 // @match       https://arca.live/b/characterai*
-// @version     2.1.1+1.0
+// @version     2.1.1+1.1
 // @author      PantaFive
 // @homepageURL https://github.com/panta5/AI-Image-EXIF-Viewer
 // @downloadURL https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js
@@ -228,23 +228,25 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                         });
                     }
                 });
-                GM_registerMenuCommand('아카라이브 글쓰기 창 스크립트 토글', () => {
-                    if (GM_getValue('useDragdropUpload', true)) {
-                        GM_setValue('useDragdropUpload', false);
-                        toastmix.fire({
-                            icon: 'error',
-                            title: `아카 글쓰기 창 스크립트 비활성화
-                      다음번 작성시부터 적용됩니다`,
-                        });
-                    } else {
-                        GM_setValue('useDragdropUpload', true);
-                        toastmix.fire({
-                            icon: 'success',
-                            title: `아카 글쓰기 창 스크립트 활성화
-                      다음번 작성시부터 적용됩니다`,
-                        });
-                    }
-                });
+                // https://arca.live/b/aiart/121872652 ::::: 수정 250211
+                // todo: 일단 주석처리해보고 문제 없으면 그대로 두기
+                // GM_registerMenuCommand('아카라이브 글쓰기 창 스크립트 토글', () => {
+                //     if (GM_getValue('useDragdropUpload', true)) {
+                //         GM_setValue('useDragdropUpload', false);
+                //         toastmix.fire({
+                //             icon: 'error',
+                //             title: `아카 글쓰기 창 스크립트 비활성화
+                //       다음번 작성시부터 적용됩니다`,
+                //         });
+                //     } else {
+                //         GM_setValue('useDragdropUpload', true);
+                //         toastmix.fire({
+                //             icon: 'success',
+                //             title: `아카 글쓰기 창 스크립트 활성화
+                //       다음번 작성시부터 적용됩니다`,
+                //         });
+                //     }
+                // });
             }
         } catch (err) {
             console.log(err);
@@ -464,6 +466,47 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 metadata['CFG scale'] = comment.scale;
                 metadata['Seed'] = comment.seed;
                 metadata['Software'] = 'NovelAI';
+                metadata['Model'] = exif.Source; // Model (v1.1에서 추가)
+                const model = exif.Source.split(' '); // Model hash (v1.1에서 추가)
+                metadata['Model hash'] = model[model.length - 1]; // Model hash (v1.1에서 추가)
+                metadata['Size'] = `${comment.width}x${comment.height}`; // Size (v1.1에서 추가)
+
+                if (comment?.strength) {
+                    metadata['Denoising strength'] = comment.strength; // Denoising strength (v1.1에서 추가)
+                }
+
+                // v4 prompt/negative prompt https://arca.live/b/aiart/124370349
+                if (comment?.v4_prompt || comment?.v4_negative_prompt) {
+                    console.log('v4 감지');
+                    function extractAndCleanCaptions(data, id) {
+                        function recursiveExtract(obj) {
+                            let captions = [];
+                            if (typeof obj === 'object' && obj !== null) {
+                                for (const key in obj) {
+                                    if (key.includes('caption') && typeof obj[key] === 'string') {
+                                        captions.push(obj[key]);
+                                    } else {
+                                        captions = captions.concat(recursiveExtract(obj[key]));
+                                    }
+                                }
+                            } else if (Array.isArray(obj)) {
+                                obj.forEach((item) => {
+                                    captions = captions.concat(recursiveExtract(item));
+                                });
+                            }
+                            return captions;
+                        }
+
+                        const captions = recursiveExtract(data[id]);
+                        let concatenated = captions.join(', ');
+                        concatenated = concatenated.replace(/,\s*,/g, ',').replace(/\s\s+/g, ' ').replace(/,\s*$/, '');
+                        return concatenated;
+                    }
+                    metadata.prompt = extractAndCleanCaptions(comment, 'v4_prompt');
+                    metadata.negativePrompt = extractAndCleanCaptions(comment, 'v4_negative_prompt');
+                    console.log(comment.v4_prompt);
+                    console.log(comment.v4_negative_prompt);
+                }
 
                 return metadata;
             } else if (exif['sd-metadata']) {
@@ -636,7 +679,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             <div class="md-info" id="model">${
                 metadata['Model']
                     ? `${metadata['Model']} [${metadata['Model hash']}]`
-                    : metadata['Model hash'] ?? '정보 없음'
+                    : (metadata['Model hash'] ?? '정보 없음')
             }</div>
           </div>
           <div>
