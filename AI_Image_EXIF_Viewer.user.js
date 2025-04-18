@@ -211,6 +211,23 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                         });
                     }
                 });
+                GM_registerMenuCommand('아카라이브 EXIF 보존 토글', () => {
+                    if (GM_getValue('saveExifDefault', true)) {
+                        GM_setValue('saveExifDefault', false);
+                        toastmix.fire({
+                            icon: 'error',
+                            title: `아카라이브 EXIF 보존 비활성화
+                      다음번 작성시부터 버려집니다`,
+                        });
+                    } else {
+                        GM_setValue('saveExifDefault', true);
+                        toastmix.fire({
+                            icon: 'success',
+                            title: `아카라이브 EXIF 보존 활성화
+                      다음번 작성시부터 보존됩니다`,
+                        });
+                    }
+                });
                 // https://arca.live/b/aiart/121872652 ::::: 수정 250211
                 // todo: 일단 주석처리해보고 문제 없으면 그대로 두기
                 // GM_registerMenuCommand('아카라이브 글쓰기 창 스크립트 토글', () => {
@@ -230,23 +247,6 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 //         });
                 //     }
                 // });
-                GM_registerMenuCommand('아카라이브 글쓰기 창 스크립트 토글', () => {
-                    if (GM_getValue('useDragdropUpload', true)) {
-                        GM_setValue('useDragdropUpload', false);
-                        toastmix.fire({
-                            icon: 'error',
-                            title: `아카 글쓰기 창 스크립트 비활성화
-                      다음번 작성시부터 적용됩니다`,
-                        });
-                    } else {
-                        GM_setValue('useDragdropUpload', true);
-                        toastmix.fire({
-                            icon: 'success',
-                            title: `아카 글쓰기 창 스크립트 활성화
-                      다음번 작성시부터 적용됩니다`,
-                        });
-                    }
-                });
             }
         } catch (err) {
             console.log(err);
