@@ -228,25 +228,23 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                         });
                     }
                 });
-                // https://arca.live/b/aiart/121872652 ::::: 수정 250211
-                // todo: 일단 주석처리해보고 문제 없으면 그대로 두기
-                // GM_registerMenuCommand('아카라이브 글쓰기 창 스크립트 토글', () => {
-                //     if (GM_getValue('useDragdropUpload', true)) {
-                //         GM_setValue('useDragdropUpload', false);
-                //         toastmix.fire({
-                //             icon: 'error',
-                //             title: `아카 글쓰기 창 스크립트 비활성화
-                //       다음번 작성시부터 적용됩니다`,
-                //         });
-                //     } else {
-                //         GM_setValue('useDragdropUpload', true);
-                //         toastmix.fire({
-                //             icon: 'success',
-                //             title: `아카 글쓰기 창 스크립트 활성화
-                //       다음번 작성시부터 적용됩니다`,
-                //         });
-                //     }
-                // });
+                GM_registerMenuCommand('아카라이브 글쓰기 창 스크립트 토글', () => {
+                    if (GM_getValue('useDragdropUpload', true)) {
+                        GM_setValue('useDragdropUpload', false);
+                        toastmix.fire({
+                            icon: 'error',
+                            title: `아카 글쓰기 창 스크립트 비활성화
+                      다음번 작성시부터 적용됩니다`,
+                        });
+                    } else {
+                        GM_setValue('useDragdropUpload', true);
+                        toastmix.fire({
+                            icon: 'success',
+                            title: `아카 글쓰기 창 스크립트 활성화
+                      다음번 작성시부터 적용됩니다`,
+                        });
+                    }
+                });
             }
         } catch (err) {
             console.log(err);
@@ -1015,7 +1013,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             let response, contentType, reader;
             const Referer = `${location.protocol}//${location.hostname}`;
             if (isArca) {
-                response = await fetch(url.replace('ac.namu.la', 'ac-o.namu.la'));
+                response = await fetch(url);
                 contentType = response.headers.get('content-type');
                 reader = response.body.getReader();
             } else if (useTampermonkey) {
@@ -1122,7 +1120,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
         console.time('modal open');
         console.time('fetch');
-        const metadata = await fetchAndDecode(url);
+        const metadata = await fetchAndDecode(url.replace(/ac-p\d.namu.la/g, 'ac-o.namu.la'));
         console.timeEnd('fetch');
         console.log(metadata);
 
