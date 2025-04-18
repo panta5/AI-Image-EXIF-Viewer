@@ -1122,7 +1122,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
         console.time('modal open');
         console.time('fetch');
-        const metadata = await fetchAndDecode(url.replace(/.+\.namu\.la/g, 'ac-o.namu.la'));
+        const metadata = await fetchAndDecode(url.replace(/ac.*\.namu\.la/g, 'ac-o.namu.la'));
         console.timeEnd('fetch');
         console.log(metadata);
 
