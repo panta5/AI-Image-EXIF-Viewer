@@ -7,7 +7,7 @@
 // @match       https://arca.live/b/aiartreal*
 // @match       https://arca.live/b/aireal*
 // @match       https://arca.live/b/characterai*
-// @version     2.1.1+1.1
+// @version     2.1.1+1.2
 // @author      PantaFive
 // @homepageURL https://github.com/panta5/AI-Image-EXIF-Viewer
 // @downloadURL https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js
