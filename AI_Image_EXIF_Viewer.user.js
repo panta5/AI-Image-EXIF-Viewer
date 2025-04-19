@@ -1015,7 +1015,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             let response, contentType, reader;
             const Referer = `${location.protocol}//${location.hostname}`;
             if (isArca) {
-                response = await fetch(url.replace('ac.namu.la', 'ac-o.namu.la'));
+                response = await fetch(url);
                 contentType = response.headers.get('content-type');
                 reader = response.body.getReader();
             } else if (useTampermonkey) {
@@ -1122,7 +1122,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
         console.time('modal open');
         console.time('fetch');
-        const metadata = await fetchAndDecode(url);
+        const metadata = await fetchAndDecode(url.replace(/ac.*\.namu\.la/g, 'ac-p3.namu.la'));
         console.timeEnd('fetch');
         console.log(metadata);
 
