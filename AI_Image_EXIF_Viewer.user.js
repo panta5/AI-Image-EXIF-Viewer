@@ -7,7 +7,7 @@
 // @match       https://arca.live/b/aiartreal*
 // @match       https://arca.live/b/aireal*
 // @match       https://arca.live/b/characterai*
-// @version     2.1.1+1.2
+// @version     2.1.1+1.3
 // @author      PantaFive
 // @homepageURL https://github.com/panta5/AI-Image-EXIF-Viewer
 // @downloadURL https://github.com/panta5/AI-Image-EXIF-Viewer/raw/main/AI_Image_EXIF_Viewer.user.js
@@ -188,29 +188,32 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             if (typeof GM_registerMenuCommand == undefined) {
                 return;
             } else {
-                GM_registerMenuCommand('(로그인 필수) Pixiv 뷰어 사용 토글', () => {
-                    if (GM_getValue('usePixiv', false)) {
-                        GM_setValue('usePixiv', false);
-                        toastmix.fire({
-                            icon: 'error',
-                            title: `Pixiv 비활성화
+                GM_registerMenuCommand(
+                    '(로그인 필수) Pixiv 뷰어 사용 토글',
+                    () => {
+                        if (GM_getValue('usePixiv', false)) {
+                            GM_setValue('usePixiv', false);
+                            toastmix.fire({
+                                icon: 'error',
+                                title: `Pixiv 비활성화
                       창이 닫힌 후 새로고침 됩니다`,
-                            didDestroy: () => {
-                                location.reload();
-                            },
-                        });
-                    } else {
-                        GM_setValue('usePixiv', true);
-                        toastmix.fire({
-                            icon: 'success',
-                            title: `Pixiv 활성화
+                                didDestroy: () => {
+                                    location.reload();
+                                },
+                            });
+                        } else {
+                            GM_setValue('usePixiv', true);
+                            toastmix.fire({
+                                icon: 'success',
+                                title: `Pixiv 활성화
                       창이 닫힌 후 새로고침 됩니다`,
-                            didDestroy: () => {
-                                location.reload();
-                            },
-                        });
+                                didDestroy: () => {
+                                    location.reload();
+                                },
+                            });
+                        }
                     }
-                });
+                );
                 GM_registerMenuCommand('아카라이브 EXIF 보존 토글', () => {
                     if (GM_getValue('saveExifDefault', true)) {
                         GM_setValue('saveExifDefault', false);
@@ -293,7 +296,8 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     } catch {}
                     uploadArca(blob, uploadableType, saveEXIF).then((url) => {
                         editor.innerHTML =
-                            editor.innerHTML + `<p><img src="${url}" class="fr-fic fr-dii"></p><p><br></p>`;
+                            editor.innerHTML +
+                            `<p><img src="${url}" class="fr-fic fr-dii"></p><p><br></p>`;
                         Swal.close();
                     });
                 } else if (uploadableType == 'video') {
@@ -317,21 +321,34 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     return;
                 }
                 const metadata = await extractImageMetadata(blob, type);
-                metadata ? showMetadataModal(metadata) : showTagExtractionModal(null, blob);
+                metadata
+                    ? showMetadataModal(metadata)
+                    : showTagExtractionModal(null, blob);
             }
         }
 
         setupEventListeners() {
             window.addEventListener('dragenter', () => this.showDropZone());
-            this.dropZone.addEventListener('dragenter', (e) => this.allowDrag(e));
-            this.dropZone.addEventListener('dragover', (e) => this.allowDrag(e));
-            this.dropZone.addEventListener('dragleave', () => this.hideDropZone());
+            this.dropZone.addEventListener('dragenter', (e) =>
+                this.allowDrag(e)
+            );
+            this.dropZone.addEventListener('dragover', (e) =>
+                this.allowDrag(e)
+            );
+            this.dropZone.addEventListener('dragleave', () =>
+                this.hideDropZone()
+            );
             this.dropZone.addEventListener('drop', (e) => this.handleDrop(e));
         }
     }
 
     function getMetadataPNGChunk(chunk) {
-        const isValidPNG = chunk.slice(0, 8).every((byte, index) => [137, 80, 78, 71, 13, 10, 26, 10][index] === byte);
+        const isValidPNG = chunk
+            .slice(0, 8)
+            .every(
+                (byte, index) =>
+                    [137, 80, 78, 71, 13, 10, 26, 10][index] === byte
+            );
         if (!isValidPNG) {
             console.error('Invalid PNG');
             return null;
@@ -348,8 +365,13 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 if (chunk.byteLength < position + chunkLength + 12) {
                     return;
                 }
-                const name = String.fromCharCode(...chunk.subarray(position + 4, position + 8));
-                const data = chunk.subarray(position + 8, position + chunkLength + 8);
+                const name = String.fromCharCode(
+                    ...chunk.subarray(position + 4, position + 8)
+                );
+                const data = chunk.subarray(
+                    position + 8,
+                    position + chunkLength + 8
+                );
                 const dataString = textDecoder.decode(data);
 
                 if (name === 'tEXt') {
@@ -367,7 +389,12 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
         }
 
         function getUint32(offset) {
-            return (chunk[offset] << 24) | (chunk[offset + 1] << 16) | (chunk[offset + 2] << 8) | chunk[offset + 3];
+            return (
+                (chunk[offset] << 24) |
+                (chunk[offset + 1] << 16) |
+                (chunk[offset + 2] << 8) |
+                chunk[offset + 3]
+            );
         }
         checkForChunks();
         return metadata;
@@ -384,11 +411,15 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
         if (chunk[offset] === 0xff) {
             switch (chunk[offset + 1]) {
                 case 0xe0: {
-                    offset += ((chunk[offset + 2] << 8) | chunk[offset + 3]) + 2;
+                    offset +=
+                        ((chunk[offset + 2] << 8) | chunk[offset + 3]) + 2;
                 }
                 case 0xe1: {
                     const length = (chunk[offset + 2] << 8) | chunk[offset + 3];
-                    const data = chunk.subarray(offset + 4, offset + 2 + length);
+                    const data = chunk.subarray(
+                        offset + 4,
+                        offset + 2 + length
+                    );
                     if (
                         data[0] === 69 && //0x45 E
                         data[1] === 120 && //0x78 x
@@ -397,7 +428,10 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                         data[4] === 0 && // null
                         data[5] === 0 // null
                     ) {
-                        const userCommentData = data.subarray(46, offset + 2 + length);
+                        const userCommentData = data.subarray(
+                            46,
+                            offset + 2 + length
+                        );
                         const parameters = textDecoder
                             .decode(userCommentData)
                             .replace('UNICODE', '')
@@ -424,19 +458,29 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
         try {
             let metadata = {};
             if (exif.parameters) {
-                let parameters = exif.parameters.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                let parameters = exif.parameters
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;');
                 metadata.rawMetadata = parameters;
 
                 if (!parameters.includes('Negative prompt')) {
-                    parameters = parameters.replace('Steps', '\nNegative prompt: 정보 없음\nSteps');
+                    parameters = parameters.replace(
+                        'Steps',
+                        '\nNegative prompt: 정보 없음\nSteps'
+                    );
                 }
 
                 parameters = parameters.split('Steps: ');
                 parameters = `${parameters[0]
                     .replaceAll(': ', ':')
-                    .replace('Negative prompt:', 'Negative prompt: ')}Steps: ${parameters[1]}`;
+                    .replace('Negative prompt:', 'Negative prompt: ')}Steps: ${
+                    parameters[1]
+                }`;
 
-                const metadataStr = parameters.substring(parameters.indexOf('Steps'), parameters.length);
+                const metadataStr = parameters.substring(
+                    parameters.indexOf('Steps'),
+                    parameters.length
+                );
                 const keyValuePairs = metadataStr.split(', ');
 
                 for (const pair of keyValuePairs) {
@@ -447,10 +491,18 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 metadata.prompt =
                     parameters.indexOf('Negative prompt') === 0
                         ? '정보 없음'
-                        : parameters.substring(0, parameters.indexOf('Negative prompt:'));
-                metadata.negativePrompt = parameters.includes('Negative prompt:')
+                        : parameters.substring(
+                              0,
+                              parameters.indexOf('Negative prompt:')
+                          );
+                metadata.negativePrompt = parameters.includes(
+                    'Negative prompt:'
+                )
                     ? parameters
-                          .substring(parameters.indexOf('Negative prompt:'), parameters.indexOf('Steps:'))
+                          .substring(
+                              parameters.indexOf('Negative prompt:'),
+                              parameters.indexOf('Steps:')
+                          )
                           .replace('Negative prompt:', '')
                     : null;
 
@@ -483,15 +535,22 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                             let captions = [];
                             if (typeof obj === 'object' && obj !== null) {
                                 for (const key in obj) {
-                                    if (key.includes('caption') && typeof obj[key] === 'string') {
+                                    if (
+                                        key.includes('caption') &&
+                                        typeof obj[key] === 'string'
+                                    ) {
                                         captions.push(obj[key]);
                                     } else {
-                                        captions = captions.concat(recursiveExtract(obj[key]));
+                                        captions = captions.concat(
+                                            recursiveExtract(obj[key])
+                                        );
                                     }
                                 }
                             } else if (Array.isArray(obj)) {
                                 obj.forEach((item) => {
-                                    captions = captions.concat(recursiveExtract(item));
+                                    captions = captions.concat(
+                                        recursiveExtract(item)
+                                    );
                                 });
                             }
                             return captions;
@@ -499,11 +558,20 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
                         const captions = recursiveExtract(data[id]);
                         let concatenated = captions.join(', ');
-                        concatenated = concatenated.replace(/,\s*,/g, ',').replace(/\s\s+/g, ' ').replace(/,\s*$/, '');
+                        concatenated = concatenated
+                            .replace(/,\s*,/g, ',')
+                            .replace(/\s\s+/g, ' ')
+                            .replace(/,\s*$/, '');
                         return concatenated;
                     }
-                    metadata.prompt = extractAndCleanCaptions(comment, 'v4_prompt');
-                    metadata.negativePrompt = extractAndCleanCaptions(comment, 'v4_negative_prompt');
+                    metadata.prompt = extractAndCleanCaptions(
+                        comment,
+                        'v4_prompt'
+                    );
+                    metadata.negativePrompt = extractAndCleanCaptions(
+                        comment,
+                        'v4_negative_prompt'
+                    );
                     console.log(comment.v4_prompt);
                     console.log(comment.v4_negative_prompt);
                 }
@@ -516,10 +584,13 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 const PromptRegex = /[^[\]]+(?=\[|$)/g;
                 const negativePromptRegex = /\[.*?\]/g;
                 const promptArray = rowPrompt.match(PromptRegex);
-                const negativePromptArray = rowPrompt.match(negativePromptRegex);
-                const prompt = promptArray.map((prompt) => prompt.replace(/^\,|\,$/g, ''));
+                const negativePromptArray =
+                    rowPrompt.match(negativePromptRegex);
+                const prompt = promptArray.map((prompt) =>
+                    prompt.replace(/^\,|\,$/g, '')
+                );
                 const negativePrompt = negativePromptArray.map((prompt) =>
-                    prompt.replace(/^\[|\]$/g, '').replace(/^\,|\,$/g, ''),
+                    prompt.replace(/^\[|\]$/g, '').replace(/^\,|\,$/g, '')
                 );
 
                 metadata.prompt = prompt.join(', ');
@@ -530,7 +601,9 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 metadata['Sampler'] = parameters?.image.sampler;
                 metadata['CFG scale'] = parameters?.image.cfg_scale;
                 metadata['Seed'] = parameters?.image.seed;
-                metadata['Size'] = `${parameters?.image.width}x${parameters?.image.height}`;
+                metadata[
+                    'Size'
+                ] = `${parameters?.image.width}x${parameters?.image.height}`;
                 metadata['Software'] = 'InvokeAI';
 
                 return metadata;
@@ -565,7 +638,8 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             metadata?.prompt?.includes('lora:') ||
             metadata?.negativePrompt?.includes('lora:')) &&
             inferList.push('LoRa');
-        (metadata?.prompt?.includes('lyco:') || metadata?.negativePrompt?.includes('lyco:')) &&
+        (metadata?.prompt?.includes('lyco:') ||
+            metadata?.negativePrompt?.includes('lyco:')) &&
             inferList.push('LyCORIS');
         (metadata?.['Hypernet'] ||
             metadata?.prompt?.includes('hypernet:') ||
@@ -580,9 +654,11 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             }
         }
         metadata?.['SD upscale upscaler'] && inferList.push('SD upscale');
-        metadata?.['Ultimate SD upscale upscaler'] && inferList.push('Ultimate SD upscale');
+        metadata?.['Ultimate SD upscale upscaler'] &&
+            inferList.push('Ultimate SD upscale');
         metadata?.['Latent Couple'] && inferList.push('Latent Couple');
-        metadata?.['Dynamic thresholding enabled'] && inferList.push('Dynamic thresholding');
+        metadata?.['Dynamic thresholding enabled'] &&
+            inferList.push('Dynamic thresholding');
         metadata?.['LLuL Enabled'] && inferList.push('LLuL');
         metadata?.['Cutoff enabled'] && inferList.push('Cutoff');
         metadata?.['Tiled Diffusion'] && inferList.push('Tiled Diffusion');
@@ -647,27 +723,39 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
         <div class="md-nested-grid">
           <div>
             <div class="md-title">Sampler <span class="md-copy md-button" data-clipboard-target="#sampler"></span></div>
-            <div class="md-info" id="sampler">${metadata['Sampler'] ?? '정보 없음'}</div>
+            <div class="md-info" id="sampler">${
+                metadata['Sampler'] ?? '정보 없음'
+            }</div>
           </div>
           <div>
             <div class="md-title">Seed <span class="md-copy md-button" data-clipboard-target="#seed"></span></div>
-            <div class="md-info" id="seed">${metadata['Seed'] ?? '정보 없음'}</div>
+            <div class="md-info" id="seed">${
+                metadata['Seed'] ?? '정보 없음'
+            }</div>
           </div>
           <div>
             <div class="md-title">Steps <span class="md-copy md-button" data-clipboard-target="#steps"></span></div>
-            <div class="md-info" id="steps">${metadata['Steps'] ?? '정보 없음'}</div>
+            <div class="md-info" id="steps">${
+                metadata['Steps'] ?? '정보 없음'
+            }</div>
           </div>
           <div>
             <div class="md-title">Size <span class="md-copy md-button" data-clipboard-target="#size"></span></div>
-            <div class="md-info" id="size">${metadata['Size'] ?? '정보 없음'}</div>
+            <div class="md-info" id="size">${
+                metadata['Size'] ?? '정보 없음'
+            }</div>
           </div>
           <div>
             <div class="md-title">CFG scale <span class="md-copy md-button" data-clipboard-target="#cfg-scale"></span></div>
-            <div class="md-info" id="cfg-scale">${metadata['CFG scale'] ?? '정보 없음'}</div>
+            <div class="md-info" id="cfg-scale">${
+                metadata['CFG scale'] ?? '정보 없음'
+            }</div>
           </div>
           <div>
             <div class="md-title">Denoising strength <span class="md-copy md-button" data-clipboard-target="#denoising-strength"></span></div>
-            <div class="md-info" id="denoising-strength">${metadata['Denoising strength'] ?? '정보 없음'}</div>
+            <div class="md-info" id="denoising-strength">${
+                metadata['Denoising strength'] ?? '정보 없음'
+            }</div>
           </div>
           <div class="md-model">
             <div class="md-title">Model
@@ -679,7 +767,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             <div class="md-info" id="model">${
                 metadata['Model']
                     ? `${metadata['Model']} [${metadata['Model hash']}]`
-                    : (metadata['Model hash'] ?? '정보 없음')
+                    : metadata['Model hash'] ?? '정보 없음'
             }</div>
           </div>
           <div>
@@ -762,12 +850,17 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
         function getOptimizedImageURL(url) {
             if (isArca) {
-                return url.replace('ac.namu.la', 'ac-o.namu.la').replace('&type=orig', '');
+                return url
+                    .replace('ac.namu.la', 'ac-o.namu.la')
+                    .replace('&type=orig', '');
             }
             if (isPixiv) {
                 const extension = url.substring(url.lastIndexOf('.') + 1);
                 return url
-                    .replace('/img-original/', '/c/600x1200_90_webp/img-master/')
+                    .replace(
+                        '/img-original/',
+                        '/c/600x1200_90_webp/img-master/'
+                    )
                     .replace(`.${extension}`, '_master1200.jpg');
             }
         }
@@ -808,13 +901,17 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     })
                         .then((res) => {
                             if (!res.status === 200) {
-                                Swal.showValidationMessage(`https://autotagger.donmai.us 접속되는지 확인!`);
+                                Swal.showValidationMessage(
+                                    `https://autotagger.donmai.us 접속되는지 확인!`
+                                );
                             }
                             return res.json();
                         })
                         .catch((error) => {
                             console.log(error);
-                            Swal.showValidationMessage(`https://autotagger.donmai.us 접속되는지 확인!`);
+                            Swal.showValidationMessage(
+                                `https://autotagger.donmai.us 접속되는지 확인!`
+                            );
                         });
                 },
                 preDeny: async () => {
@@ -828,15 +925,18 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     }
                     const optimizedBase64 = await blobToBase64(blob);
 
-                    return fetch('https://smilingwolf-wd-v1-4-tags.hf.space/run/predict', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            data: [optimizedBase64, 'SwinV2', 0.35, 0.85],
-                        }),
-                    })
+                    return fetch(
+                        'https://smilingwolf-wd-v1-4-tags.hf.space/run/predict',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                data: [optimizedBase64, 'SwinV2', 0.35, 0.85],
+                            }),
+                        }
+                    )
                         .then((res) => res.json())
                         .catch((error) => {
                             Swal.showValidationMessage(error);
@@ -848,7 +948,9 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 if (result.isDismissed) return;
                 let tags;
                 if (result.isConfirmed) {
-                    tags = Object.keys(result.value[0].tags).join(', ').replaceAll('_', ' ');
+                    tags = Object.keys(result.value[0].tags)
+                        .join(', ')
+                        .replaceAll('_', ' ');
                 } else if (result.isDenied) {
                     tags = result.value.data[3]?.label
                         ? `${result.value.data[3]?.label}, ${result.value.data[0]}`
@@ -875,7 +977,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 resolve(
                     new Blob([reader.result], {
                         type: file.type,
-                    }),
+                    })
                 );
             reader.readAsArrayBuffer(file);
         });
@@ -903,7 +1005,8 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
     }
 
     function handleUploadable(MIME) {
-        const uploadableSubtypes = /(jpe?g|jfif|pjp|png|gif|web[pm]|mov|mp4|m4[ab])/;
+        const uploadableSubtypes =
+            /(jpe?g|jfif|pjp|png|gif|web[pm]|mov|mp4|m4[ab])/;
         const [type, subtype] = MIME.split('/');
         if (uploadableSubtypes.test(subtype)) {
             return type;
@@ -914,7 +1017,10 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
     async function getStealthExif(src) {
         let canvas = document.createElement('canvas');
-        let ctx = canvas.getContext('2d', { willReadFrequently: true, alpha: true });
+        let ctx = canvas.getContext('2d', {
+            willReadFrequently: true,
+            alpha: true,
+        });
         let img = new Image();
         img.src = src;
         img.crossOrigin = 'Anonymous';
@@ -942,7 +1048,9 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     if (index == signature.length * 8) {
                         let str = '';
                         for (let i = 0; i < binary.length / 8; i++) {
-                            str += String.fromCharCode(parseInt(binary.substring(i * 8, i * 8 + 8), 2));
+                            str += String.fromCharCode(
+                                parseInt(binary.substring(i * 8, i * 8 + 8), 2)
+                            );
                         }
 
                         if (str == signature) {
@@ -964,7 +1072,10 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     if (index == length) {
                         let array = new Uint8Array(length);
                         for (let i = 0; i < binary.length / 8; i++) {
-                            array[i] = parseInt(binary.substring(i * 8, i * 8 + 8), 2);
+                            array[i] = parseInt(
+                                binary.substring(i * 8, i * 8 + 8),
+                                2
+                            );
                         }
 
                         let temp = pako.ungzip(array);
@@ -984,15 +1095,21 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 case 'image/jpeg':
                 case 'image/webp': {
                     const exif = exifLib.load(await blobToBase64(blob));
-                    const parameters = exif.Exif[37510].replace('UNICODE', '').replaceAll('\u0000', '');
+                    const parameters = exif.Exif[37510]
+                        .replace('UNICODE', '')
+                        .replaceAll('\u0000', '');
                     return {
                         parameters,
                     };
                 }
                 case 'image/png': {
                     const chunks = UPNG.decode(await blob.arrayBuffer());
-                    let parameters = chunks.tabs.tEXt?.parameters || chunks.tabs.iTXt?.parameters;
-                    const description = chunks.tabs.tEXt?.Description || chunks.tabs.iTXt?.Description;
+                    let parameters =
+                        chunks.tabs.tEXt?.parameters ||
+                        chunks.tabs.iTXt?.parameters;
+                    const description =
+                        chunks.tabs.tEXt?.Description ||
+                        chunks.tabs.iTXt?.Description;
                     if (parameters) {
                         return {
                             parameters,
@@ -1033,9 +1150,11 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 });
                 const headers = Object.fromEntries(
                     response.responseHeaders.split('\n').map((line) => {
-                        const [key, value] = line.split(':').map((part) => part.trim());
+                        const [key, value] = line
+                            .split(':')
+                            .map((part) => part.trim());
                         return [key, value];
-                    }),
+                    })
                 );
                 contentType = headers['content-type'];
                 reader = response.response.getReader();
@@ -1049,7 +1168,9 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 reader = response.body.getReader();
             }
             if (
-                (isPixiv && !url.includes('.jpg') && contentType === 'text/html') ||
+                (isPixiv &&
+                    !url.includes('.jpg') &&
+                    contentType === 'text/html') ||
                 (isPixiv && url.includes('.jpg'))
             ) {
                 url = url.replace('.png', '.jpg');
@@ -1088,7 +1209,9 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 });
                 const base64 = await blobToBase64(blob);
                 const exif = exifLib.load(base64);
-                const parameters = exif.Exif[37510].replace('UNICODE', '').replaceAll('\u0000', '');
+                const parameters = exif.Exif[37510]
+                    .replace('UNICODE', '')
+                    .replaceAll('\u0000', '');
                 metadata = {
                     parameters,
                 };
@@ -1122,11 +1245,18 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
 
         console.time('modal open');
         console.time('fetch');
-        const metadata = await fetchAndDecode(url.replace(/ac.*\.namu\.la/g, 'ac-p3.namu.la'));
+        const metadata = await fetchAndDecode(
+            // url.replace(/ac.*\.namu\.la/g, 'ac-p3.namu.la')
+            url.replace(/ac.*\.namu\.la/g, 'ac-o.namu.la')
+        );
         console.timeEnd('fetch');
         console.log(metadata);
 
-        if (metadata?.Description || metadata?.parameters || metadata?.['sd-metadata']) {
+        if (
+            metadata?.Description ||
+            metadata?.parameters ||
+            metadata?.['sd-metadata']
+        ) {
             showMetadataModal(metadata, url);
         } else {
             showTagExtractionModal(url);
@@ -1153,14 +1283,24 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
             let xhr = new XMLHttpRequest();
             xhr.upload.addEventListener('progress', null, false);
             let formData = new FormData();
-            if (!document.querySelector('#article_write_form > input[name=token]')) {
+            if (
+                !document.querySelector(
+                    '#article_write_form > input[name=token]'
+                )
+            ) {
                 await getCSRFToken().then((tokenList) => {
                     token = tokenList[1];
                 });
             }
 
             formData.append('upload', blob);
-            formData.append('token', token || document.querySelector('#article_write_form > input[name=token]').value);
+            formData.append(
+                'token',
+                token ||
+                    document.querySelector(
+                        '#article_write_form > input[name=token]'
+                    ).value
+            );
             formData.append('saveExif', saveEXIF);
             formData.append('saveFilename', false);
 
@@ -1198,7 +1338,8 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
     const isArcaViewer = /(arca.live)(\/)(b\/.*)(\/)(\d*)/.test(href);
     const isArcaEditor = /(arca.live\/b\/.*\/)(edit|write)/.test(href);
     const useTampermonkey = GM_xmlhttpRequest?.RESPONSE_TYPE_STREAM && true;
-    const isPixivDragUpload = pathname === '/illustration/create' || pathname === '/upload.php';
+    const isPixivDragUpload =
+        pathname === '/illustration/create' || pathname === '/upload.php';
 
     if (GM_getValue('usePixiv', false) && isPixiv) {
         function getOriginalUrl(url) {
@@ -1214,11 +1355,18 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
         let isAi = false;
         if (!isMobile) {
             document.arrive('footer > ul > li > span > a', function () {
-                if (this.href === 'https://www.pixiv.help/hc/articles/11866167926809') isAi = true;
+                if (
+                    this.href ===
+                    'https://www.pixiv.help/hc/articles/11866167926809'
+                )
+                    isAi = true;
             });
-            document.arrive('div[role=presentation]:last-child > div > div', function () {
-                isAi && this.click();
-            });
+            document.arrive(
+                'div[role=presentation]:last-child > div > div',
+                function () {
+                    isAi && this.click();
+                }
+            );
         } else {
             document.arrive('a.ai-generated', () => {
                 isAi = true;
@@ -1264,7 +1412,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                     const src = `${this.src}&type=orig`;
                     extract(src);
                 };
-            },
+            }
         );
     }
 
@@ -1278,7 +1426,7 @@ const footerString = `<div class="version">v${GM_info.script.version}  -  <a hre
                 },
                 () => {
                     document.getElementById('saveExif').checked = true;
-                },
+                }
             );
         }
         if (!GM_getValue('useDragdropUpload', true)) ArcaDragUpload = false;
